@@ -9,7 +9,7 @@ document.addEventListener('alpine:init', () => {
             name: 'Demolitionist',
             metrics: [
               {
-                value: 0,
+                value: 8,
               },
               {
                 value: 0,
@@ -21,7 +21,7 @@ document.addEventListener('alpine:init', () => {
             name: 'Hatchet',
             metrics: [
               {
-                value: 0,
+                value: 8,
               },
               {
                 value: 0,
@@ -33,7 +33,7 @@ document.addEventListener('alpine:init', () => {
             name: 'Red Guard',
             metrics: [
               {
-                value: 0,
+                value: 10,
               },
               {
                 value: 0,
@@ -45,7 +45,7 @@ document.addEventListener('alpine:init', () => {
             name: 'Voidwarden',
             metrics: [
               {
-                value: 0,
+                value: 6,
               },
               {
                 value: 0,
@@ -331,6 +331,91 @@ document.addEventListener('alpine:init', () => {
           },
         ],
       },
+      {
+        name: 'Monster 5',
+        items: [
+          {
+            name: '1',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '2',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '3',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '4',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '5',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '6',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '7',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '8',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '9',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+          {
+            name: '10',
+            metrics: [
+              {
+                value: 0,
+              },
+            ],
+          },
+        ],
+      },
     ],
     // Magic: The Gathering (2P)
     [
@@ -448,6 +533,9 @@ document.addEventListener('alpine:init', () => {
       categories: this.$persist(null),
 
       // Method
+      isInactive(item) {
+        return item.metrics.every((metric) => metric.value === 0);
+      },
       metricDecrease(metric) {
         if (metric.value > 0) {
           metric.value--;

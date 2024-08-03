@@ -41,14 +41,14 @@
               <div class="accordion-body p-2">
                 <div class="row g-2">
                   <template x-for="item in category.items">
-                    <div class="col-6 col-md-4 col-lg-3">
-                      <div class="card">
+                    <div class="col-6 col-sm-4 col-md-3">
+                      <div class="card" :class="{'opacity-50': isInactive(item)}">
                         <div class="card-header py-1 px-2 fs-7 text-bg-secondary" x-text="item.name"></div>
                         <ul class="list-group list-group-flush pt-2 px-2 bg-light user-select-none">
                           <template x-for="metric in item.metrics">
                             <div class="input-group mb-2">
                               <button
-                                class="btn px-4"
+                                class="btn px-3"
                                 :class="`btn-${metric.context || 'danger'}`"
                                 type="button"
                                 @click="metricDecrease(metric)"
@@ -63,7 +63,7 @@
                                 @blur="metricBlur(metric)"
                               />
                               <button
-                                class="btn px-4"
+                                class="btn px-3"
                                 :class="`btn-${metric.context || 'danger'}`"
                                 type="button"
                                 @click="metricIncrease(metric)"
