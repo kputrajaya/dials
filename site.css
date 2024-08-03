@@ -1,0 +1,25 @@
+[x-cloak] {
+  display: none;
+}
+[\@click] {
+  cursor: pointer;
+}
+
+.fs-7 {
+  font-size: 0.8rem;
+}
+
+.container {
+  max-width: 992px;
+}
+
+@media (min-width: 576px) {
+  html {
+    font-size: 18px;
+  }
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 20px;
+  }
+}
