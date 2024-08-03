@@ -1,6 +1,6 @@
 document.addEventListener('alpine:init', () => {
   const PRESETS = [
-    // Gloomhaven: Jaws of the Lion
+    // Gloomhaven: Jaws of the Lion (4P)
     [
       {
         name: 'Players',
@@ -332,7 +332,55 @@ document.addEventListener('alpine:init', () => {
         ],
       },
     ],
-    // Star Realms
+    // Magic: The Gathering (2P)
+    [
+      {
+        name: 'Players',
+        items: [
+          {
+            name: 'P1',
+            metrics: [
+              {
+                value: 20,
+              },
+            ],
+          },
+          {
+            name: 'P2',
+            metrics: [
+              {
+                value: 20,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    // Star Realms (2P)
+    [
+      {
+        name: 'Players',
+        items: [
+          {
+            name: 'P1',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+          {
+            name: 'P2',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    // Star Realms (4P)
     [
       {
         name: 'Players',
@@ -434,7 +482,12 @@ document.addEventListener('alpine:init', () => {
 
         if (this.categories) return;
 
-        const promptText = 'Select a preset below:\n1. Gloomhaven: Jaws of the Lion\n2. Star Realms';
+        const promptText =
+          'Select a preset below:' +
+          '\n1. Gloomhaven: Jaws of the Lion (4P)' +
+          '\n2. Magic: The Gathering (2P)' +
+          '\n3. Star Realms (2P)' +
+          '\n4. Star Realms (4P)';
         let presetIndex;
         while (!(presetIndex >= 1 && presetIndex <= PRESETS.length)) {
           presetIndex = Math.floor(prompt(promptText));
