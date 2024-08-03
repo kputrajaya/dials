@@ -531,10 +531,14 @@ document.addEventListener('alpine:init', () => {
     return {
       // Data
       categories: this.$persist(null),
+      activeCategoryIndices: new Set(),
 
       // Method
-      isInactive(item) {
-        return item.metrics.every((metric) => metric.value === 0);
+      categoryActive(category) {
+        return category.items.some((item) => this.itemActive(item));
+      },
+      itemActive(item) {
+        return item.metrics.some((metric) => metric.value > 0);
       },
       metricDecrease(metric) {
         if (metric.value > 0) {
@@ -560,6 +564,7 @@ document.addEventListener('alpine:init', () => {
 
       // Initialization
       init() {
+        // Load state from query params
         try {
           const params = getParams();
           this.categories = JSON.parse(params.state);
@@ -568,19 +573,27 @@ document.addEventListener('alpine:init', () => {
           // Ignore malformed data
         }
 
-        if (this.categories) return;
-
-        const promptText =
-          'Select a preset below:' +
-          '\n1. Gloomhaven: Jaws of the Lion (4P)' +
-          '\n2. Magic: The Gathering (2P)' +
-          '\n3. Star Realms (2P)' +
-          '\n4. Star Realms (4P)';
-        let presetIndex;
-        while (!(presetIndex >= 1 && presetIndex <= PRESETS.length)) {
-          presetIndex = Math.floor(prompt(promptText));
+        // Load state from presets
+        if (!this.categories) {
+          const promptText =
+            'Select a preset below:' +
+            '\n1. Gloomhaven: Jaws of the Lion (4P)' +
+            '\n2. Magic: The Gathering (2P)' +
+            '\n3. Star Realms (2P)' +
+            '\n4. Star Realms (4P)';
+          let presetIndex;
+          while (!(presetIndex >= 1 && presetIndex <= PRESETS.length)) {
+            presetIndex = Math.floor(prompt(promptText));
+          }
+          this.categories = deepCopy(PRESETS[presetIndex - 1]);
         }
-        this.categories = deepCopy(PRESETS[presetIndex - 1]);
+
+        // Record active category indices for accordion state
+        this.categories.forEach((category, index) => {
+          if (this.categoryActive(category)) {
+            this.activeCategoryIndices.add(index);
+          }
+        });
       },
     };
   });

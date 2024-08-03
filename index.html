@@ -25,6 +25,7 @@
             <h2 class="accordion-header" :id="`accordionHeading${categoryIndex}`">
               <button
                 class="accordion-button py-1 px-2 fs-7 fw-bold"
+                :class="{collapsed: !activeCategoryIndices.has(categoryIndex)}"
                 type="button"
                 data-bs-toggle="collapse"
                 :data-bs-target="`#accordionTarget${categoryIndex}`"
@@ -36,13 +37,14 @@
             <div
               :id="`accordionTarget${categoryIndex}`"
               class="accordion-collapse collapse show"
+              :class="{show: activeCategoryIndices.has(categoryIndex)}"
               :aria-labelledby="`accordionHeading${categoryIndex}`"
             >
               <div class="accordion-body p-2">
                 <div class="row g-2">
                   <template x-for="item in category.items">
                     <div class="col-6 col-sm-4 col-md-3">
-                      <div class="card" :class="{'opacity-50': isInactive(item)}">
+                      <div class="card" :class="{'opacity-50': !itemActive(item)}">
                         <div class="card-header py-1 px-2 fs-7 text-bg-secondary" x-text="item.name"></div>
                         <ul class="list-group list-group-flush pt-2 px-2 bg-light user-select-none">
                           <template x-for="metric in item.metrics">
