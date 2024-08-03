@@ -1,45 +1,5 @@
 document.addEventListener('alpine:init', () => {
   const PRESETS = [
-    // Star Realms
-    [
-      {
-        name: 'Players',
-        items: [
-          {
-            name: 'P1',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-          {
-            name: 'P2',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-          {
-            name: 'P3',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-          {
-            name: 'P4',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-        ],
-      },
-    ],
     // Gloomhaven: Jaws of the Lion
     [
       {
@@ -372,6 +332,46 @@ document.addEventListener('alpine:init', () => {
         ],
       },
     ],
+    // Star Realms
+    [
+      {
+        name: 'Players',
+        items: [
+          {
+            name: 'P1',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+          {
+            name: 'P2',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+          {
+            name: 'P3',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+          {
+            name: 'P4',
+            metrics: [
+              {
+                value: 50,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   ];
 
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
@@ -434,7 +434,7 @@ document.addEventListener('alpine:init', () => {
 
         if (this.categories) return;
 
-        const promptText = 'Select a preset below:\n1. Star Realms\n2. Gloomhaven: Jaws of the Lion';
+        const promptText = 'Select a preset below:\n1. Gloomhaven: Jaws of the Lion\n2. Star Realms';
         let presetIndex;
         while (!(presetIndex >= 1 && presetIndex <= PRESETS.length)) {
           presetIndex = Math.floor(prompt(promptText));
