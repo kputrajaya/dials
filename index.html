@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Life Dials</title>
+    <title>Game Dials</title>
 
     <link rel="icon" href="favicon-16.png" sizes="16x16" />
     <link rel="icon" href="favicon-32.png" sizes="32x32" />
@@ -19,75 +19,92 @@
   </head>
   <body class="bg-light">
     <div class="container p-2" x-data="dials" x-cloak>
-      <div class="accordion">
-        <template x-for="category, categoryIndex in categories">
-          <div class="accordion-item">
-            <h2 class="accordion-header" :id="`accordionHeading${categoryIndex}`">
-              <button
-                class="accordion-button py-1 px-2 fs-7 fw-bold"
-                :class="{collapsed: !activeCategoryIndices.has(categoryIndex)}"
-                type="button"
-                data-bs-toggle="collapse"
-                :data-bs-target="`#accordionTarget${categoryIndex}`"
-                aria-expanded="true"
-                :aria-controls="`accordionTarget${categoryIndex}`"
-                x-text="category.name"
-              ></button>
-            </h2>
-            <div
-              :id="`accordionTarget${categoryIndex}`"
-              class="accordion-collapse collapse show"
-              :class="{show: activeCategoryIndices.has(categoryIndex)}"
-              :aria-labelledby="`accordionHeading${categoryIndex}`"
-            >
-              <div class="accordion-body p-2">
-                <div class="row g-2">
-                  <template x-for="item in category.items">
-                    <div class="col-6 col-sm-4 col-md-3">
-                      <div class="card" :class="{'opacity-50': !itemActive(item)}">
-                        <div class="card-header py-1 px-2 fs-7 text-bg-secondary" x-text="item.name"></div>
-                        <ul class="list-group list-group-flush pt-2 px-2 bg-light user-select-none">
-                          <template x-for="metric in item.metrics">
-                            <div class="input-group mb-2">
-                              <button
-                                class="btn px-3"
-                                :class="`btn-${metric.context || 'danger'}`"
-                                type="button"
-                                @click="metricDecrease(metric)"
-                              >
-                                -
-                              </button>
-                              <input
-                                class="form-control text-center bg-opacity-10"
-                                :class="`bg-${metric.context || 'danger'}`"
-                                type="phone"
-                                x-model.number="metric.value"
-                                @blur="metricBlur(metric)"
-                              />
-                              <button
-                                class="btn px-3"
-                                :class="`btn-${metric.context || 'danger'}`"
-                                type="button"
-                                @click="metricIncrease(metric)"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </template>
-                        </ul>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </div>
-            </div>
+      <!-- Before Init -->
+      <div x-show="!categories.length">
+        <h1 class="mb-2 fs-5 fw-bold">Game Dials</h1>
+        <div class="mb-3 text-secondary">
+          Track health and other parameters in tabletop games without physical dials.
+        </div>
+        <div class="mb-2 fw-semibold">First off, which preset?</div>
+        <template x-for="preset in presetKeys">
+          <div class="d-grid mb-2">
+            <button class="btn btn-primary" type="button" @click="loadPreset(preset)" x-text="preset"></button>
           </div>
         </template>
       </div>
 
-      <div>
-        <div class="text-center">
-          <button class="btn btn-link fs-7 text-danger" type="button" @click="reset()">Reset</button>
+      <!-- After Init -->
+      <div x-show="categories.length">
+        <div class="accordion">
+          <template x-for="category, categoryIndex in categories">
+            <div class="accordion-item">
+              <h2 class="accordion-header" :id="`accordionHeading${categoryIndex}`">
+                <button
+                  class="accordion-button py-1 px-2 fs-7 fw-bold"
+                  :class="{collapsed: !category.open}"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  :data-bs-target="`#accordionTarget${categoryIndex}`"
+                  aria-expanded="true"
+                  :aria-controls="`accordionTarget${categoryIndex}`"
+                  x-text="category.name"
+                ></button>
+              </h2>
+              <div
+                :id="`accordionTarget${categoryIndex}`"
+                class="accordion-collapse collapse show"
+                :class="{show: category.open}"
+                :aria-labelledby="`accordionHeading${categoryIndex}`"
+              >
+                <div class="accordion-body p-2">
+                  <div class="row g-2">
+                    <template x-for="item in category.items">
+                      <div class="col-6 col-sm-4 col-md-3">
+                        <div class="card" :class="{'opacity-50': !itemActive(item)}">
+                          <div class="card-header py-1 px-2 fs-7 text-bg-secondary" x-text="item.name"></div>
+                          <ul class="list-group list-group-flush pt-2 px-2 bg-light user-select-none">
+                            <template x-for="metric in item.metrics">
+                              <div class="input-group mb-2">
+                                <button
+                                  class="btn px-3"
+                                  :class="`btn-${metric.context || 'danger'}`"
+                                  type="button"
+                                  @click="metricDecrease(metric)"
+                                >
+                                  -
+                                </button>
+                                <input
+                                  class="form-control text-center bg-opacity-10"
+                                  :class="`bg-${metric.context || 'danger'}`"
+                                  type="phone"
+                                  x-model.number="metric.value"
+                                  @blur="metricBlur(metric)"
+                                />
+                                <button
+                                  class="btn px-3"
+                                  :class="`btn-${metric.context || 'danger'}`"
+                                  type="button"
+                                  @click="metricIncrease(metric)"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </template>
+                          </ul>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <div>
+          <div class="text-center">
+            <button class="btn btn-link fs-7 text-danger" type="button" @click="reset()">Reset</button>
+          </div>
         </div>
       </div>
     </div>

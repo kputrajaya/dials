@@ -1,9 +1,9 @@
 document.addEventListener('alpine:init', () => {
-  const PRESETS = [
-    // Gloomhaven: Jaws of the Lion (4P)
-    [
+  const PRESETS = {
+    'Gloomhaven: Jaws of the Lion': [
       {
         name: 'Players',
+        open: true,
         items: [
           {
             name: 'Demolitionist',
@@ -57,6 +57,7 @@ document.addEventListener('alpine:init', () => {
       },
       {
         name: 'Monster 1',
+        open: false,
         items: [
           {
             name: '1',
@@ -110,6 +111,7 @@ document.addEventListener('alpine:init', () => {
       },
       {
         name: 'Monster 2',
+        open: false,
         items: [
           {
             name: '1',
@@ -163,6 +165,7 @@ document.addEventListener('alpine:init', () => {
       },
       {
         name: 'Monster 3',
+        open: false,
         items: [
           {
             name: '1',
@@ -248,6 +251,7 @@ document.addEventListener('alpine:init', () => {
       },
       {
         name: 'Monster 4',
+        open: false,
         items: [
           {
             name: '1',
@@ -333,6 +337,7 @@ document.addEventListener('alpine:init', () => {
       },
       {
         name: 'Monster 5',
+        open: false,
         items: [
           {
             name: '1',
@@ -417,58 +422,10 @@ document.addEventListener('alpine:init', () => {
         ],
       },
     ],
-    // Magic: The Gathering (2P)
-    [
+    'Star Realms': [
       {
         name: 'Players',
-        items: [
-          {
-            name: 'P1',
-            metrics: [
-              {
-                value: 20,
-              },
-            ],
-          },
-          {
-            name: 'P2',
-            metrics: [
-              {
-                value: 20,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    // Star Realms (2P)
-    [
-      {
-        name: 'Players',
-        items: [
-          {
-            name: 'P1',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-          {
-            name: 'P2',
-            metrics: [
-              {
-                value: 50,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    // Star Realms (4P)
-    [
-      {
-        name: 'Players',
+        open: true,
         items: [
           {
             name: 'P1',
@@ -490,7 +447,7 @@ document.addEventListener('alpine:init', () => {
             name: 'P3',
             metrics: [
               {
-                value: 50,
+                value: 0,
               },
             ],
           },
@@ -498,14 +455,14 @@ document.addEventListener('alpine:init', () => {
             name: 'P4',
             metrics: [
               {
-                value: 50,
+                value: 0,
               },
             ],
           },
         ],
       },
     ],
-  ];
+  };
 
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
   const getParams = () => {
@@ -522,23 +479,22 @@ document.addEventListener('alpine:init', () => {
     }
     return params;
   };
-  const clearParams = () => {
-    const url = window.location.protocol + '//' + window.location.host + window.location.pathname;
-    window.history.replaceState({ path: url }, '', url);
-  };
 
   Alpine.data('dials', function () {
     return {
+      // Constants
+      presetKeys: Object.keys(PRESETS),
+
       // Data
-      categories: this.$persist(null),
-      activeCategoryIndices: new Set(),
+      categories: this.$persist([]),
+      lastJson: null,
 
       // Method
-      categoryActive(category) {
-        return category.items.some((item) => this.itemActive(item));
-      },
       itemActive(item) {
         return item.metrics.some((metric) => metric.value > 0);
+      },
+      loadPreset(presetKey) {
+        this.categories = deepCopy(PRESETS[presetKey]);
       },
       metricDecrease(metric) {
         if (metric.value > 0) {
@@ -558,42 +514,43 @@ document.addEventListener('alpine:init', () => {
       reset() {
         const response = prompt('Reset values? Type "y" to continue.') || '';
         if (response.trim().toLowerCase() !== 'y') return;
-        this.categories = null;
-        window.location.reload();
+        this.categories = [];
       },
 
       // Initialization
       init() {
-        // Load state from query params
-        try {
-          const params = getParams();
-          this.categories = JSON.parse(params.state);
-          clearParams();
-        } catch (e) {
-          // Ignore malformed data
-        }
+        const connect = (subKey) => {
+          const ws = new WebSocket('wss://pubsub.h.kvn.pt/');
+          ws.onopen = () => {
+            console.log('Subscribing to:', subKey);
+            ws.send(JSON.stringify({ action: 'sub', key: subKey }));
+          };
+          ws.onmessage = (event) => {
+            console.log('Received data');
+            this.lastJson = event.data;
+            const categories = JSON.parse(event.data);
 
-        // Load state from presets
-        if (!this.categories) {
-          const promptText =
-            'Select a preset below:' +
-            '\n1. Gloomhaven: Jaws of the Lion (4P)' +
-            '\n2. Magic: The Gathering (2P)' +
-            '\n3. Star Realms (2P)' +
-            '\n4. Star Realms (4P)';
-          let presetIndex;
-          while (!(presetIndex >= 1 && presetIndex <= PRESETS.length)) {
-            presetIndex = Math.floor(prompt(promptText));
-          }
-          this.categories = deepCopy(PRESETS[presetIndex - 1]);
-        }
+            this.categories = JSON.parse(event.data);
+          };
+          ws.onclose = (e) => {
+            console.log('Socket closed:', e.reason);
+            setTimeout(() => connect(subKey), 1000);
+          };
+          ws.onerror = function (err) {
+            console.error('Socket error:', err.message);
+            ws.close();
+          };
+          this.$watch('categories', (value) => {
+            if (JSON.stringify(this.categories) === this.lastJson) return;
+            console.log('Sending data');
+            ws.send(JSON.stringify({ action: 'pub', key: subKey, data: value }));
+          });
+        };
 
-        // Record active category indices for accordion state
-        this.categories.forEach((category, index) => {
-          if (this.categoryActive(category)) {
-            this.activeCategoryIndices.add(index);
-          }
-        });
+        const params = getParams();
+        if (params.key) {
+          connect('dials:' + params.key);
+        }
       },
     };
   });
