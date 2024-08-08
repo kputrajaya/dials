@@ -14,6 +14,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
     <script src="site.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   </head>
@@ -38,24 +39,16 @@
         <div class="accordion">
           <template x-for="category, categoryIndex in categories">
             <div class="accordion-item">
-              <h2 class="accordion-header" :id="`accordionHeading${categoryIndex}`">
+              <h2 class="accordion-header">
                 <button
                   class="accordion-button py-1 px-2 fs-7 fw-bold"
                   :class="{collapsed: !category.open}"
                   type="button"
-                  data-bs-toggle="collapse"
-                  :data-bs-target="`#accordionTarget${categoryIndex}`"
-                  aria-expanded="true"
-                  :aria-controls="`accordionTarget${categoryIndex}`"
                   x-text="category.name"
+                  @click="category.open = !category.open"
                 ></button>
               </h2>
-              <div
-                :id="`accordionTarget${categoryIndex}`"
-                class="accordion-collapse collapse show"
-                :class="{show: category.open}"
-                :aria-labelledby="`accordionHeading${categoryIndex}`"
-              >
+              <div class="accordion-collapse collapse show" x-show="category.open" x-collapse>
                 <div class="accordion-body p-2">
                   <div class="row g-2">
                     <template x-for="item in category.items">

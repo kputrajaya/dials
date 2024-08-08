@@ -521,16 +521,14 @@ document.addEventListener('alpine:init', () => {
       init() {
         const connect = (subKey) => {
           const ws = new WebSocket('wss://pubsub.h.kvn.pt/');
-          ws.onopen = () => {
-            console.log('Subscribing to:', subKey);
-            ws.send(JSON.stringify({ action: 'sub', key: subKey }));
-          };
           ws.onmessage = (event) => {
             console.log('Received data');
             this.lastJson = event.data;
-            const categories = JSON.parse(event.data);
-
             this.categories = JSON.parse(event.data);
+          };
+          ws.onopen = () => {
+            console.log('Subscribing to:', subKey);
+            ws.send(JSON.stringify({ action: 'sub', key: subKey }));
           };
           ws.onclose = (e) => {
             console.log('Socket closed:', e.reason);
@@ -548,8 +546,8 @@ document.addEventListener('alpine:init', () => {
         };
 
         const params = getParams();
-        if (params.key) {
-          connect('dials:' + params.key);
+        if (params.k) {
+          connect('dials:' + params.k);
         }
       },
     };
