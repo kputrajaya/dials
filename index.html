@@ -53,13 +53,13 @@
                   <div class="row g-2">
                     <template x-for="item in category.items">
                       <div class="col-6 col-sm-4 col-md-3">
-                        <div class="card" :class="{'opacity-50': !itemActive(item)}">
+                        <div class="card border-0 rounded overflow-hidden" :class="{'opacity-50': !itemActive(item)}">
                           <div class="card-header py-1 px-2 fs-7 text-bg-secondary" x-text="item.name"></div>
-                          <ul class="list-group list-group-flush pt-2 px-2 bg-light user-select-none">
+                          <ul class="list-group list-group-flush bg-light user-select-none">
                             <template x-for="metric in item.metrics">
-                              <div class="input-group mb-2">
+                              <div class="input-group">
                                 <button
-                                  class="btn px-3"
+                                  class="btn px-3 border-top-0 rounded-0"
                                   :class="`btn-${metric.context || 'danger'}`"
                                   type="button"
                                   @click="metricDecrease(metric)"
@@ -67,14 +67,14 @@
                                   -
                                 </button>
                                 <input
-                                  class="form-control text-center bg-opacity-10"
+                                  class="form-control text-center border-top-0 bg-opacity-10"
                                   :class="`bg-${metric.context || 'danger'}`"
                                   type="phone"
                                   x-model.number="metric.value"
                                   @blur="metricBlur(metric)"
                                 />
                                 <button
-                                  class="btn px-3"
+                                  class="btn px-3 border-top-0 rounded-0"
                                   :class="`btn-${metric.context || 'danger'}`"
                                   type="button"
                                   @click="metricIncrease(metric)"
